@@ -22,6 +22,15 @@
     data-cfasync="false"
     src="https://unfinishedspend.com/b69460673e31162a246da7f34c528460/invoke.js">
   </script>  <style>
+    .facebook-follow-btn {
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:11px 16px;border-radius:8px;background:#1877f2;color:#fff;
+      font-weight:750;text-decoration:none;border:1px solid rgba(255,255,255,.12);
+      transition:transform .18s ease,filter .18s ease;
+    }
+    .facebook-follow-btn:hover {filter:brightness(1.08);transform:translateY(-1px)}
+    .whatsapp-welcome-actions {display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
 
     :root {
       --bg-color: #121212;
@@ -1481,6 +1490,9 @@
     <div class="whatsapp-welcome-actions">
       <a class="whatsapp-join-btn" href="https://whatsapp.com/channel/0029Vb9JkUrBPzjRTRPSb71Y" target="_blank" rel="noopener noreferrer">
         <i class="fa-brands fa-whatsapp"></i> Join Channel
+      </a>
+      <a class="facebook-follow-btn" href="https://www.facebook.com/share/18YRLdzxVC/" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-facebook"></i> Follow Our Facebook Page
       </a>
       <button class="whatsapp-dismiss-btn" id="whatsappDismiss" type="button">Maybe later</button>
     </div>
