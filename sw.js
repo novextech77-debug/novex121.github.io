@@ -1,6 +1,6 @@
 /* =========================================================
    NOVEX STREAM — SERVICE WORKER
-   Cache-first for the app shell, network-first for navigation.
+   Cache-first for app assets; network-first for navigation.
    ========================================================= */
 
 const CACHE_NAME = "novex-cache-v4";
@@ -39,10 +39,10 @@ self.addEventListener("fetch", event => {
 
   const url = new URL(request.url);
 
-  // Leave third-party services and streaming providers untouched.
+  // Do not intercept TMDB, streaming providers, or other third-party services.
   if (url.origin !== self.location.origin) return;
 
-  // Always try the live site first for page navigation.
+  // Keep navigation fresh, with an offline homepage fallback.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -60,35 +60,27 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // App shell files load from cache immediately, then refresh in the background.
+  // App assets are served from cache when available.
   const isAppAsset =
     request.destination === "script" ||
     request.destination === "style" ||
     request.destination === "font" ||
-    url.pathname.endsWith(".json") ||
-    url.pathname.endsWith(".png") ||
-    url.pathname.endsWith(".jpg") ||
-    url.pathname.endsWith(".webp") ||
-    url.pathname.endsWith(".svg");
+    /\.(json|png|jpe?g|webp|svg|ico)$/i.test(url.pathname);
 
   if (isAppAsset) {
     event.respondWith(
-      caches.match(request).then(cached => {
-        const networkUpdate = fetch(request).then(response => {
-          if (response && response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-          }
-          return response;
-        });
-
-        return cached || networkUpdate.catch(() => Response.error());
-      })
+      caches.match(request).then(cached => cached || fetch(request).then(response => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        }
+        return response;
+      }))
     );
     return;
   }
 
-  // Other same-origin GET requests use network-first with a cache fallback.
+  // Other same-origin requests use network-first with a cache fallback.
   event.respondWith(
     fetch(request)
       .then(response => {
